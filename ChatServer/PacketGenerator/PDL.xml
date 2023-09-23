@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PDL>
+	<packet name="PlayerInfo">
+		<int name="PlayerId"/>
+		<string name="PlayerName"/>
+		<list name="Skill">
+			<int name="Id"/>
+			<string name="name"/>
+		</list>
+	</packet>
+</PDL>
