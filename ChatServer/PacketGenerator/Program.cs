@@ -1,11 +1,16 @@
 ﻿using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 using System.Xml;
 
 namespace PacketGenerator
 {
     public class Program
     {
+        static string _fileFormat = "";
         static string _packetFormat = "";
+
+        static string _packetEnums = "";
+        static int _packetNum = 0;
 
         static void Main(string[] args)
         {
@@ -15,35 +20,42 @@ namespace PacketGenerator
                 IgnoreComments = true,
                 IgnoreWhitespace = true,
             };
+            //if (args.Length > 0 )
+            //    PDL_Path = args[0];
+
             using (XmlReader r = XmlReader.Create(PDL_Path, settings))
             {
-                _packetFormat += ParseXml(r);
-                File.WriteAllText("GenPackets.cs", _packetFormat);
+                r.MoveToContent();
+
+                while (r.Read() && r.NodeType != XmlNodeType.EndElement)
+                {
+                    ParsePacket(r);
+                }
             }
+            _fileFormat += string.Format(PacketFormat.fileFormat, _packetEnums, _packetFormat);
+
+            File.WriteAllText("GenPackets.cs", _fileFormat);
         }
 
-        static string ParseXml(XmlReader r)
+        static void ParsePacket(XmlReader r)
         {
             string PacketName = "";
             string Member = "";
             string Read = "";
             string Write = "";
 
-            int depth = 1;
-            while (r.Read()) 
-            {
-                r.MoveToContent();
-                if (depth > r.Depth)
-                    continue;
+            PacketName = r["name"];
+            Console.WriteLine(PacketName);
+            _packetNum = ++_packetNum;
+            _packetEnums += string.Format(PacketFormat.packetIdFormat, PacketName, _packetNum);
+            Tuple<string, string, string> t = ParseMembers(r);
+            Member += t.Item1;
+            Read += t.Item2;
+            Write += t.Item3;
 
-                PacketName = r["name"];
-                Tuple<string, string, string> t = ParseMembers(r);
-                Member += t.Item1;
-                Read += t.Item2;
-                Write += t.Item3;
-            }
-
-            return string.Format(PacketFormat.packetFormat, PacketName, Member, Read, Write);
+            _packetEnums += '\t';
+            _packetFormat += string.Format(PacketFormat.packetFormat, PacketName, Member, Read, Write);
+            return;
         }
 
         static Tuple<string, string, string> ParseMembers(XmlReader r)
@@ -52,10 +64,11 @@ namespace PacketGenerator
             string readCode = "";
             string writeCode = "";
 
+            int depth = r.Depth + 1;
             while (r.Read())
             {
-                if (r.Name == "packet")
-                    continue;
+                if (r.Depth != depth)
+                    break;
 
                 string memberType = r.Name;
                 string memberName = r["name"];
@@ -80,14 +93,17 @@ namespace PacketGenerator
                         break;
                     case "list":
                         Tuple<string, string, string> t = ParseList(r);
-                        memberCode += string.Format(PacketFormat.memberListFormat, FirstCharToUpper(memberName), t.Item1, t.Item2, t.Item3, FirstCharToLower(memberName));
-                        readCode += string.Format(PacketFormat.readListFormat, FirstCharToUpper(memberName), FirstCharToLower(memberName));
-                        writeCode += string.Format(PacketFormat.writeListFormat, FirstCharToUpper(memberName), FirstCharToLower(memberName));
+                        memberCode += t.Item1;
+                        readCode += t.Item2;
+                        writeCode += t.Item3;
                         break;
                 }
                 memberCode += Environment.NewLine;
-                memberCode += "\t";
+
             }
+            memberCode = memberCode.Replace("\n", "\n\t");
+            readCode = readCode.Replace("\n", "\n\t\t");
+            writeCode = writeCode.Replace("\n", "\n\t\t");
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
         }
 
@@ -96,15 +112,16 @@ namespace PacketGenerator
         /// </summary>
         static Tuple<string, string, string> ParseList(XmlReader r)
         {
+            string memberName = r["name"];
+
             string memberCode = "";
             string readCode = "";
             string writeCode = "";
 
-            Tuple<string, string, string> tuple = ParseMembers(r);
-            memberCode += tuple.Item1;
-            readCode += tuple.Item3;
-            writeCode += tuple.Item3;
-            
+            Tuple<string, string, string> t = ParseMembers(r);
+            memberCode += string.Format(PacketFormat.memberListFormat, FirstCharToUpper(memberName), t.Item1, t.Item2, t.Item3, FirstCharToLower(memberName));
+            readCode += string.Format(PacketFormat.readListFormat, FirstCharToUpper(memberName), FirstCharToLower(memberName));
+            writeCode += string.Format(PacketFormat.writeListFormat, FirstCharToUpper(memberName), FirstCharToLower(memberName));
 
             return new Tuple<string, string, string>(memberCode, readCode, writeCode);
         }

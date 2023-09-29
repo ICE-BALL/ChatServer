@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "h7gxzhmjXJTnmlMtRv64zW+qLPwPhI5W0pkOw0uSIs7dz0lmbeb+nFdMYrNHljj6NqiwleVb7viNt5Tmy6E16Q==",
+  "dgSpecHash": "5XDHpnutVw4X6/jb1GvnRsAg0heLJYXCixOqlJtg5CYsZbFVC84Jwz3edkW1HBrEFzkWTNG+HbSeESSJnvHMTg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\inha oh\\Documents\\ChatServer\\ChatServer\\ServerCore\\ServerCore.csproj",
+  "projectFilePath": "C:\\Users\\오헌\\Documents\\ChatServer\\ChatServer\\ServerCore\\ServerCore.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

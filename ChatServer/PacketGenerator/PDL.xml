@@ -3,9 +3,38 @@
 	<packet name="PlayerInfo">
 		<int name="PlayerId"/>
 		<string name="PlayerName"/>
+		<int name="Error"/>
 		<list name="Skill">
 			<int name="Id"/>
 			<string name="name"/>
+		</list>
+	</packet>
+	<packet name="PlayerInfoRec">
+		<int name="PlayerId"/>
+		<string name="PlayerName"/>
+		<list name="Skill">
+			<int name="Id"/>
+			<string name="name"/>
+			<list name="SkillInfo">
+				<int name="Attack"/>
+				<string name="Heal"/>
+			</list>
+		</list>
+	</packet>
+	<packet name="PlayerSkillInfoRec">
+		<int name="PlayerSkill"/>
+		<string name="PlayerNameSkill"/>
+		<list name="SkillId">
+			<int name="Id"/>
+			<string name="name"/>
+			<list name="SkillInfo">
+				<int name="Attack"/>
+				<string name="Heal"/>
+				<list name="SkillEnerge">
+					<int name="Damage"/>
+					<float name="Duration"/>
+				</list>
+			</list>
 		</list>
 	</packet>
 </PDL>

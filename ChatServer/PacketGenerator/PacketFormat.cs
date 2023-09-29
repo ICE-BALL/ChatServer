@@ -8,6 +8,32 @@ namespace PacketGenerator
 {
     internal class PacketFormat
     {
+        // {0} packet enum
+        // {1} packets
+        public static string fileFormat =
+@"
+using ServerCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
+using System.Threading.Tasks;
+
+public enum PacketID
+{{
+    {0}
+}}
+
+{1}
+";
+
+        // {0} packet Name
+        // {1} packet Number
+        public static string packetIdFormat = 
+@"{0} = {1},
+";
+
         // {0} packet Name
         // {1} member
         // {2} Read
@@ -83,16 +109,16 @@ public List<{0}> {4}s = new List<{0}>();
         public static string readFormat =
 @"
 this.{0} = BitConverter.{1}(sendBuff.Array, sendBuff.Offset + count);
-    count += sizeof({2});
+count += sizeof({2});
 ";
 
         // {0} string name
         public static string readStringFormat =
 @"
 ushort {0}Len = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
-    count += sizeof(ushort);
-    this.{0} = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, {0}Len);
-    count += {0}Len;
+count += sizeof(ushort);
+this.{0} = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, {0}Len);
+count += {0}Len;
 ";
 
         // {0} list Name
@@ -100,13 +126,13 @@ ushort {0}Len = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
         public static string readListFormat =
 @"
 ushort {1}Len = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
-    count += sizeof(ushort);
-    for (int i = 0; i < {1}Len; i++) 
-    {{
-        {0} {1} = new {0}();
-        {1}.Read(sendBuff, ref count);
-        this.{1}s.Add({1});
-    }}
+count += sizeof(ushort);
+for (int i = 0; i < {1}Len; i++) 
+{{
+    {0} {1} = new {0}();
+    {1}.Read(sendBuff, ref count);
+    this.{1}s.Add({1});
+}}
 ";
 
         // {0} member Name
@@ -114,17 +140,17 @@ ushort {1}Len = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
         public static string writeFormat =
 @"
 Array.Copy(BitConverter.GetBytes({0}), 0, segment.Array, segment.Offset + count, sizeof({1}));
-    count += sizeof({1});
+count += sizeof({1});
 ";
 
         // {0} string name
         public static string writeStringFormat =
 @"
 ushort {0}Len = (ushort)Encoding.Unicode.GetByteCount({0});
-    Array.Copy(BitConverter.GetBytes({0}Len), 0, segment.Array, segment.Offset + count, sizeof(ushort));
-    count += sizeof(ushort);
-    Array.Copy(Encoding.Unicode.GetBytes({0}), 0, segment.Array, segment.Offset + count, {0}Len);
-    count += {0}Len;
+Array.Copy(BitConverter.GetBytes({0}Len), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+count += sizeof(ushort);
+Array.Copy(Encoding.Unicode.GetBytes({0}), 0, segment.Array, segment.Offset + count, {0}Len);
+count += {0}Len;
 ";
 
         // {0} list Name
@@ -132,9 +158,9 @@ ushort {0}Len = (ushort)Encoding.Unicode.GetByteCount({0});
         public static string writeListFormat =
 @"
 Array.Copy(BitConverter.GetBytes({1}s.Count), 0, segment.Array, segment.Offset + count, sizeof(ushort));
-    count += sizeof(ushort);
-    foreach ({0} {1} in {1}s)
-        {1}.Write(segment, ref count);
+count += sizeof(ushort);
+foreach ({0} {1} in {1}s)
+    {1}.Write(segment, ref count);
 ";
     }
 }
