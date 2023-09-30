@@ -16,3 +16,21 @@ C:\Users\inha oh\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\re
 C:\Users\inha oh\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.pdb
 C:\Users\inha oh\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.genruntimeconfig.cache
 C:\Users\inha oh\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\ref\DummyClient.dll
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\DummyClient.exe
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\DummyClient.deps.json
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\DummyClient.runtimeconfig.json
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\DummyClient.dll
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\DummyClient.pdb
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\ServerCore.dll
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\bin\Debug\net7.0\ServerCore.pdb
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.csproj.AssemblyReference.cache
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.AssemblyInfoInputs.cache
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.AssemblyInfo.cs
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.csproj.CoreCompileInputs.cache
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.csproj.CopyComplete
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.dll
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\refint\DummyClient.dll
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.pdb
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\DummyClient.genruntimeconfig.cache
+C:\Users\오헌\Documents\ChatServer\ChatServer\DummyClient\obj\Debug\net7.0\ref\DummyClient.dll

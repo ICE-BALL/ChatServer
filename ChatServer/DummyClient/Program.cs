@@ -7,12 +7,17 @@ namespace DummyClient
     {
         static void Main(string[] args)
         {
-            IPAddress IpAddr = IPAddress.Parse("192.168.251.230");
-            IPEndPoint endPoint = new IPEndPoint(IpAddr, 7777);
+            string host = Dns.GetHostName();
+            IPHostEntry IPhost = Dns.GetHostEntry(host);
+            IPAddress iPAddress = IPhost.AddressList[0];
+            IPEndPoint endPoint = new IPEndPoint(iPAddress, 7777);
 
             Connector connector = new Connector();
 
-            connector.Init(endPoint, () => { return new ServerSession(); });
+            Console.WriteLine("Enter Your Name");
+            string PlayerName = Console.ReadLine();
+
+            connector.Init(endPoint, () => { return new ServerSession() { PlayerName = PlayerName}; } );
 
             while (true)
             {

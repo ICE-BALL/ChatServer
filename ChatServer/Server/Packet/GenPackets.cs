@@ -1,4 +1,4 @@
-﻿using ServerCore;
+using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,64 +8,39 @@ using System.Threading.Tasks;
 
 public enum PacketID
 {
-    SendHello,
+    Enter = 1,
+	Leave = 2,
+	BroadCastSend = 3,
+	
 }
 
-public class SendHello
+public interface IPacket
 {
-    public int Id;
-    public string name;
+	public ushort Protocol { get; }
+	public void Read(ArraySegment<byte> sendBuff);
+	public ArraySegment<byte> Write();
+}
 
-    public class Skill
-    {
-        public int S_Id;
-        public string S_name;
 
-        public void Read(ArraySegment<byte> s, ref ushort count)
-        {
-            this.S_Id = BitConverter.ToInt32(s.Array, s.Offset + count);
-            count += sizeof(int);
-            ushort nameLen = BitConverter.ToUInt16(s.Array, s.Offset + count);
-            count += sizeof(ushort);
-            this.S_name = Encoding.Unicode.GetString(s.Array, s.Offset + count, nameLen);
-            count += nameLen;
-        }
+public class Enter
+{
+    public string PlayerName;
+	
 
-        public void Write(ArraySegment<byte> s, ref ushort count)
-        {
-            Array.Copy(BitConverter.GetBytes(S_Id), 0, s.Array, s.Offset + count, sizeof(int));
-            count += sizeof(int);
-            ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(S_name);
-            Array.Copy(BitConverter.GetBytes(nameLen), 0, s.Array, s.Offset + count, sizeof(ushort));
-            count += sizeof(ushort);
-            Array.Copy(Encoding.Unicode.GetBytes(S_name), 0, s.Array, s.Offset + count, nameLen);
-            count += nameLen;
-        }
-    }
-    public List<Skill> skills = new List<Skill>();
-
-    public ushort Protocol { get { return (ushort)PacketID.SendHello; } }
+    public ushort Protocol { get { return (ushort)PacketID.Enter; } }
 
     public void Read(ArraySegment<byte> sendBuff)
     {
         ushort count = 0;
         count += sizeof(ushort);
         count += sizeof(ushort);
-
-        this.Id = BitConverter.ToInt32(sendBuff.Array, sendBuff.Offset + count);
-        count += sizeof(int);
-        ushort nameLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
-        count += sizeof(ushort);
-        this.name = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, nameLen);
-        count += nameLen;
-        ushort skillLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
-        count += sizeof(ushort);
-        for (int i = 0; i < skillLen; i++)
-        {
-            Skill skill = new Skill();
-            skill.Read(sendBuff, ref count);
-            this.skills.Add(skill);
-        }
+        
+        
+		ushort PlayerNameLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
+		count += sizeof(ushort);
+		this.PlayerName = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
     }
 
     public ArraySegment<byte> Write()
@@ -75,17 +50,14 @@ public class SendHello
         count += sizeof(ushort);
         Array.Copy(BitConverter.GetBytes(Protocol), 0, segment.Array, segment.Offset + count, sizeof(ushort));
         count += sizeof(ushort);
-        Array.Copy(BitConverter.GetBytes(Id), 0, segment.Array, segment.Offset + count, sizeof(int));
-        count += sizeof(int);
-        ushort nameLen = (ushort)Encoding.Unicode.GetByteCount(name);
-        Array.Copy(BitConverter.GetBytes(nameLen), 0, segment.Array, segment.Offset + count, sizeof(ushort));
-        count += sizeof(ushort);
-        Array.Copy(Encoding.Unicode.GetBytes(name), 0, segment.Array, segment.Offset + count, nameLen);
-        count += nameLen;
-        Array.Copy(BitConverter.GetBytes(skills.Count), 0, segment.Array, segment.Offset + count, sizeof(ushort));
-        count += sizeof(ushort);
-        foreach (Skill skill in skills)
-            skill.Write(segment, ref count);
+
+        
+		ushort PlayerNameLen = (ushort)Encoding.Unicode.GetByteCount(PlayerName);
+		Array.Copy(BitConverter.GetBytes(PlayerNameLen), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(PlayerName), 0, segment.Array, segment.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
 
         Array.Copy(BitConverter.GetBytes(count), 0, segment.Array, segment.Offset, sizeof(ushort));
 
@@ -93,3 +65,104 @@ public class SendHello
         return sendBuff;
     }
 }
+
+public class Leave
+{
+    public string PlayerName;
+	
+
+    public ushort Protocol { get { return (ushort)PacketID.Leave; } }
+
+    public void Read(ArraySegment<byte> sendBuff)
+    {
+        ushort count = 0;
+        count += sizeof(ushort);
+        count += sizeof(ushort);
+        
+        
+		ushort PlayerNameLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
+		count += sizeof(ushort);
+		this.PlayerName = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
+    }
+
+    public ArraySegment<byte> Write()
+    {
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+        ushort count = 0;
+        count += sizeof(ushort);
+        Array.Copy(BitConverter.GetBytes(Protocol), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+        count += sizeof(ushort);
+
+        
+		ushort PlayerNameLen = (ushort)Encoding.Unicode.GetByteCount(PlayerName);
+		Array.Copy(BitConverter.GetBytes(PlayerNameLen), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(PlayerName), 0, segment.Array, segment.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
+
+        Array.Copy(BitConverter.GetBytes(count), 0, segment.Array, segment.Offset, sizeof(ushort));
+
+        ArraySegment<byte> sendBuff = SendBufferHelper.Close(count);
+        return sendBuff;
+    }
+}
+
+public class BroadCastSend
+{
+    public string PlayerName;
+	public string Message;
+	
+
+    public ushort Protocol { get { return (ushort)PacketID.BroadCastSend; } }
+
+    public void Read(ArraySegment<byte> sendBuff)
+    {
+        ushort count = 0;
+        count += sizeof(ushort);
+        count += sizeof(ushort);
+        
+        
+		ushort PlayerNameLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
+		count += sizeof(ushort);
+		this.PlayerName = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
+		ushort MessageLen = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
+		count += sizeof(ushort);
+		this.Message = Encoding.Unicode.GetString(sendBuff.Array, sendBuff.Offset + count, MessageLen);
+		count += MessageLen;
+		
+    }
+
+    public ArraySegment<byte> Write()
+    {
+        ArraySegment<byte> segment = SendBufferHelper.Open(4096);
+        ushort count = 0;
+        count += sizeof(ushort);
+        Array.Copy(BitConverter.GetBytes(Protocol), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+        count += sizeof(ushort);
+
+        
+		ushort PlayerNameLen = (ushort)Encoding.Unicode.GetByteCount(PlayerName);
+		Array.Copy(BitConverter.GetBytes(PlayerNameLen), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(PlayerName), 0, segment.Array, segment.Offset + count, PlayerNameLen);
+		count += PlayerNameLen;
+		
+		ushort MessageLen = (ushort)Encoding.Unicode.GetByteCount(Message);
+		Array.Copy(BitConverter.GetBytes(MessageLen), 0, segment.Array, segment.Offset + count, sizeof(ushort));
+		count += sizeof(ushort);
+		Array.Copy(Encoding.Unicode.GetBytes(Message), 0, segment.Array, segment.Offset + count, MessageLen);
+		count += MessageLen;
+		
+
+        Array.Copy(BitConverter.GetBytes(count), 0, segment.Array, segment.Offset, sizeof(ushort));
+
+        ArraySegment<byte> sendBuff = SendBufferHelper.Close(count);
+        return sendBuff;
+    }
+}
+

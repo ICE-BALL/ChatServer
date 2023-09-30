@@ -11,8 +11,7 @@ namespace PacketGenerator
         // {0} packet enum
         // {1} packets
         public static string fileFormat =
-@"
-using ServerCore;
+@"using ServerCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +22,13 @@ using System.Threading.Tasks;
 public enum PacketID
 {{
     {0}
+}}
+
+public interface IPacket
+{{
+	public ushort Protocol {{ get; }}
+	public void Read(ArraySegment<byte> sendBuff);
+	public ArraySegment<byte> Write();
 }}
 
 {1}
@@ -90,12 +96,12 @@ public class {0}
 {{
     {1}
 
-    public void Read(ArraySegment<byte> s, ref ushort count)
+    public void Read(ArraySegment<byte> sendBuff, ref ushort count)
     {{
         {2}
     }}
 
-    public void Write(ArraySegment<byte> s, ref ushort count)
+    public void Write(ArraySegment<byte> segment, ref ushort count)
     {{
         {3}
     }}

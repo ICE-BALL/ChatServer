@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,43 +11,28 @@ namespace Server
 {
     internal class ClientSession : PacketSession
     {
+        public int SessionID { get; set; }
+        public string PlayerName { get; set; }
+        public Room _Room { get; set; } = Program._Room;
+
         public override void OnConnected(EndPoint endPoint)
         {
             Console.WriteLine($"Connected to {endPoint}");
 
-            SendHello hello = new SendHello();
-            hello.Id = 1;
-            hello.name = "Server";
-            hello.skills.Add(new SendHello.Skill() { S_Id = 1, S_name = "Fire" });
-            hello.skills.Add(new SendHello.Skill() { S_Id = 2, S_name = "Ice" });
-            hello.skills.Add(new SendHello.Skill() { S_Id = 3, S_name = "Water" });
-            hello.skills.Add(new SendHello.Skill() { S_Id = 4, S_name = "Rock" });
-
-            Send(hello.Write());
+            _Room.SesssionEnter(this);
         }
 
         public override void OnDisconnected(EndPoint endPoint)
         {
             Console.WriteLine($"Disconnected {endPoint}");
+            _Room.SesssionLeave(this);
+            PacketSender.Instance.SendLeavePacket(this);
+
         }
 
         public override void OnRecvPacket(ArraySegment<byte> sendBuff)
         {
-            ushort count = 0;
-            count += sizeof(ushort);
-            ushort Id = BitConverter.ToUInt16(sendBuff.Array, sendBuff.Offset + count);
-            switch ((PacketID)Id)
-            {
-                case PacketID.SendHello:
-                    SendHello s = new SendHello();
-                    s.Read(sendBuff);
-                    Console.WriteLine($"ID : {s.Id}, Name : {s.name}");
-                    foreach (SendHello.Skill skill in s.skills)
-                    {
-                        Console.WriteLine($"S_ID : {skill.S_Id}, S_Name : {skill.S_name}");
-                    }
-                    break;
-            }
+            PacketHandler.Instance.SerchPacket(sendBuff, this);
         }
 
         public override void OnSend(int sendBytes)

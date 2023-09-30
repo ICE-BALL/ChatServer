@@ -14,14 +14,17 @@ namespace PacketGenerator
 
         static void Main(string[] args)
         {
-            string PDL_Path = "../PDL.xml";
+            string PDL_Path;
+            if (args.Length >= 1)
+                PDL_Path = args[0];
+            else
+                 PDL_Path = "../PDL.xml";
             XmlReaderSettings settings = new XmlReaderSettings()
             {
                 IgnoreComments = true,
                 IgnoreWhitespace = true,
             };
-            //if (args.Length > 0 )
-            //    PDL_Path = args[0];
+            
 
             using (XmlReader r = XmlReader.Create(PDL_Path, settings))
             {
@@ -133,21 +136,23 @@ namespace PacketGenerator
         {
             switch (type)
             {
+                case "bool":
+                    return "ToBoolean";
                 case "short":
                     return "ToInt16";
                 case "ushort":
                     return "ToUInt16";
                 case "int":
                     return "ToInt32";
-                case "uint":
-                    return "ToUInt32";
                 case "long":
                     return "ToInt64";
-                case "ulong":
-                    return "ToUInt64";
+                case "float":
+                    return "ToSingle";
+                case "double":
+                    return "ToDouble";
+                default:
+                    return "";
             }
-
-            return null;
         }
 
         static string FirstCharToUpper(string input)
